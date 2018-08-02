@@ -14,5 +14,26 @@
 
 
 <ion-content padding>
-
+  <div id="chatMensajes">
+    <div  *ngFor="let m of mensajes" [class]="false ? 'mensaje special' : 'mensaje'">
+      <div [class]="m.usuario==usuario?'innerMessage mensajeDerecha':'innerMessage mensajeIzquierda'">
+        <div class="usuario">
+          {{m.usuario}}
+        </div>
+        <div class="mensajeContenido">
+          {{m.mensaje}}
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+      <div id="footer">
+        <div class="elem"><ion-input type="text" [(ngModel)]="mensaje"></ion-input></div>     
+        <div class="elem"><button ion-button icon-only (click)="enviarMensaje()"><ion-icon name="send"></ion-icon></button></div>
+      </div>  
+    </ion-toolbar>
+  </ion-footer>

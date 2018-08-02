@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import {AngularFireDatabase} from 'angularfire2/database';
+//import { Observable } from 'rxjs';
 /**
  * Generated class for the ChatPage page.
  *
@@ -15,13 +16,47 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class ChatPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    console.log("Parametros recibidos en chat->"+this.navParams.get("username"));
-    console.log(this.navParams);
+  usuario:string;
+  mensaje:string;
+  mensajes:object[]=[];
+  suscripcion;
+  
+  constructor( public navCtrl: NavController, public db: AngularFireDatabase,public navParams: NavParams) {    
+    //Recibe el usuario por parametro
+    this.usuario=this.navParams.get("username");    
+    this.db.list('/chat').valueChanges().subscribe((data)=>{
+      //console.log("datas",datas);
+      //datas.map(elem=>this.mensajes=datas);
+      this.mensajes=data;
+    },(error)=>{console.log("error",error)});    
   }
 
-  ionViewDidLoad() {
+  enviarMensaje(){
+    try{
+      this.db.list('/chat').push({
+        usuario:this.usuario,
+        mensaje:this.mensaje
+      }).then(()=>{
+        this.mensaje="";
+      });
+    }catch(Error){
+      console.log("Ha ocurrido un error en la pagina chat: "+Error);
+      this.showAlert("Ups","Ha ocurrido un error, no se ha establecido la conexion");
+      
+    }
+  }
+  
+  ionViewDidLoad() {    
     console.log('ionViewDidLoad ChatPage');
+  }
+
+  showAlert(titulo:string,mensaje:string) {
+    const alert = this.alertCtrl.create({
+      title: titulo,
+      subTitle: mensaje,
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
 }
